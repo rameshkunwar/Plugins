@@ -177,12 +177,17 @@ class RitzausComponent extends Component {
         //     refNode:insertNodes.body.nodes[2]
         // }
 
+        const myapi = api
+
+      
+        
+
+        
         let headlineNodeId = idGenerator()
         let rubrikNodeId = idGenerator()
         let bodyNodeId = idGenerator()
 
-        const myapi = api
-
+        
         api.editorSession.transaction((tx) => {
             myapi.document.insertBlockNode({
                 tx:tx,
@@ -475,6 +480,49 @@ class RitzausComponent extends Component {
         }
 
         //end of teaser
+
+        const allNodes = api.doc.getNodes()
+        let newHeadLineNodeId =  allNodes.body.nodes[1]
+        let newPreAmbleNodeId = allNodes.body.nodes[2]
+        let newBodyNodeId = allNodes.body.nodes[3]
+       
+        let headlineNode = null
+        let preambleNode = null
+        let bodyNode = null
+
+
+        // for(const node in allNodes){
+        //     let value = allNodes[node]
+        //     if(value.dataType === "x-im/teaser")
+        //        {
+        //            console.log('will not delte s its teaser id')
+        //        }
+        //     else{
+        //             if(value.content === ''){
+        //                 api.document.deleteNode('RitzausNyheder', value)
+        //             }
+               
+        //         }
+
+                
+        //     // if(value.id === newHeadLineNodeId)
+        //     //     headlineNode = value
+        //     // else if(value.id === newPreAmbleNodeId)
+        //     //     preambleNode = value
+        //     // else if(value.id === newBodyNodeId)
+        //     //      bodyNode = value
+             
+        // }    
+
+        
+    //     console.log(`newheadlinenodeId: ${newHeadLineNodeId}`)
+    //     console.log(`newheadlinenodeId: ${newPreAmbleNodeId}`)
+    //     //const nodeHeadline = myapi.document.get(newHeadLineNodeId)
+   
+        // api.document.deleteNode('RitzausNyheder', headlineNode)
+        // api.document.deleteNode('RitzausNyheder', preambleNode)
+        // api.document.deleteNode('RitzausNyheder', bodyNode)
+   
 
             //let's insert image
     //    let paragraphNodeId = idGenerator()
