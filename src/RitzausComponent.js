@@ -182,14 +182,11 @@ class RitzausComponent extends Component {
         let bodyNodeId = idGenerator()
 
         const myapi = api
+        
         api.editorSession.transaction((tx) => {
-            // tx.insertBlockNode({
-            //     id: headlineNodeId,
-            //     type: 'headline',
-            //     content: obj.overskrift,
-            //     containerId: 'body',
-            //     mode:'first'
-            // })
+            
+
+            const myNodes = api.document.nodes()
 
             myapi.document.insertBlockNode({
                 tx:tx,
@@ -197,12 +194,10 @@ class RitzausComponent extends Component {
                     type:'headline',
                     content:obj.overskrift,
                     attribution:''
-                }
-                
+                },
+                mode:'last'
+                //refNode:myNodes[0]
             })
-
-
-
             myapi.document.insertBlockNode({
                 tx: tx,
                 data: {
@@ -210,9 +205,32 @@ class RitzausComponent extends Component {
                   content: obj.rubrik,
                   attribution: ''
                 },
-                  mode: 'last',
-                // refNode: headlineNodeId 
+                mode:'last'
+               //refNode:myNodes[1]
+                
               })
+                myapi.document.insertBlockNode({
+                  tx:tx,
+                  data:{
+                      type:'paragraph',
+                      content:obj.broedtekst,
+                      attribution:''
+                  },
+                  mode:'last'
+                  //refNode:myNodes[2]
+              })
+
+              const nodesAfterLoading = api.document.nodes()
+
+            //   myapi.document.insertBlockNode({
+            //       tx:tx,
+            //       data:{
+            //           type:'paragraph',
+            //           content:obj.broedtekst,
+            //           attribution:''
+            //       },
+            //       mode:'last'
+            //   })
 
             // tx.insertBlockNode({
                
@@ -233,7 +251,7 @@ class RitzausComponent extends Component {
             //     refNode: rubrikNodeId
             // })    
 
-            // const imgNodeId = idGenerator()
+            //  const imgNodeId = idGenerator()
 
             // const imageFileNode = {
             //     parentNodeId: imgNodeId,
@@ -245,10 +263,7 @@ class RitzausComponent extends Component {
         
             // //create file node for the image
             // const imageFile = tx.create(imageFileNode)
-            // //const propertyMap = PropertyMap.getValidMap()
-
-            //  //insert image at current cursor pos
-            //  let insertNodes = api.doc.getNodes()
+           
             //  tx.insertBlockNode({
             //     id:imgNodeId,
             //     type:'ximimage',
@@ -280,30 +295,31 @@ class RitzausComponent extends Component {
             //     })
     
             // }, 0 )
-        })
+
+        }) //end of transaction
 
        
 
         //insert teaser
         
-        let nodes = api.doc.getNodes()
-        let teaserNode = {}
-        let notherTeaserTest=""
-        let teaserNodeId = ""
-        for(const node in nodes){
-            let value = nodes[node]
-            if(value.dataType === "x-im/teaser"){
-                teaserNodeId = value.id
-                console.log("teaserNodeId: "+teaserNodeId)
-                Object.assign(value, teaserNode)
-                //value.subect = "This is a subject",
-                value.text = obj.overskrift,
-                value.title = obj.rubrik,
-                value.uuid = "bececec2-17a5-419f-aca8-744e0427ba04",
-                value.height = "14",
-                value.width = "50"
-            }
-        }
+        // let nodes = api.doc.getNodes()
+        // let teaserNode = {}
+        // let notherTeaserTest=""
+        // let teaserNodeId = ""
+        // for(const node in nodes){
+        //     let value = nodes[node]
+        //     if(value.dataType === "x-im/teaser"){
+        //         teaserNodeId = value.id
+        //         console.log("teaserNodeId: "+teaserNodeId)
+        //         Object.assign(value, teaserNode)
+        //         //value.subect = "This is a subject",
+        //         value.text = obj.overskrift,
+        //         value.title = obj.rubrik,
+        //         value.uuid = "bececec2-17a5-419f-aca8-744e0427ba04",
+        //         value.height = "14",
+        //         value.width = "50"
+        //     }
+        // }
 
         //end of teaser
 
