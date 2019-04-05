@@ -181,111 +181,105 @@ class RitzausComponent extends Component {
         let rubrikNodeId = idGenerator()
         let bodyNodeId = idGenerator()
 
-
+        const myapi = api
         api.editorSession.transaction((tx) => {
-            tx.insertBlockNode({
-                id: headlineNodeId,
-                type: 'headline',
-                content: obj.overskrift,
-                containerId: 'body',
-                mode:'first'
+            // tx.insertBlockNode({
+            //     id: headlineNodeId,
+            //     type: 'headline',
+            //     content: obj.overskrift,
+            //     containerId: 'body',
+            //     mode:'first'
+            // })
+
+            myapi.document.insertBlockNode({
+                tx:tx,
+                data:{
+                    type:'headline',
+                    content:obj.overskrift,
+                    attribution:''
+                }
+                
             })
 
-            /**
- * Insert a text node in the specified position and put the cursor in that text node.
- *
- * @param {Transaction} tx - Supplied Substance transaction
- * @param {string} textType - Type of text node to create
- * @param {string} text - Text to insert
- * @param {string} inMode - Mode, 'first', 'last', 'after'
- * @param {Object} inRefNode - Reference node from where to insert new node
- */
 
-            // api.document.insertTextNode({
-            //     tx: tx,
-            //     textType:'preamble',
-            //     text:obj.rubrik,
-            //     inMode: 'after',
-            //     inRefNode: headlineNodeId 
-            //   })
 
-            // api.document.insert({
-            //     tx: tx,
-            //     data: {
-            //       type: 'preamble',
-            //       content: obj.rubrik,
-            //       attribution: ''
-            //     },
-            //     mode: 'after',
-            //     refNode: headlineNodeId 
-            //   })
+            myapi.document.insertBlockNode({
+                tx: tx,
+                data: {
+                  type: 'preamble',
+                  content: obj.rubrik,
+                  attribution: ''
+                },
+                  mode: 'last',
+                // refNode: headlineNodeId 
+              })
 
-            tx.insertBlockNode({
+            // tx.insertBlockNode({
                
-                id:rubrikNodeId,
-                type: 'preamble',
-                content: obj.rubrik,
-                containerId: 'body',
-                mode:'after',
-                refNode: headlineNodeId
-            })
+            //     id:rubrikNodeId,
+            //     type: 'preamble',
+            //     content: obj.rubrik,
+            //     containerId: 'body',
+            //     mode:'after',
+            //     refNode: headlineNodeId
+            // })
 
-            tx.insertBlockNode({
-                id: bodyNodeId,
-                type: 'paragraph',
-                content: obj.broedtekst,
-                containerId: 'body',
-                mode:'after',
-                refNode: rubrikNodeId
-            })    
+            // tx.insertBlockNode({
+            //     id: bodyNodeId,
+            //     type: 'paragraph',
+            //     content: obj.broedtekst,
+            //     containerId: 'body',
+            //     mode:'after',
+            //     refNode: rubrikNodeId
+            // })    
 
-            const imgNodeId = idGenerator()
+            // const imgNodeId = idGenerator()
 
-            const imageFileNode = {
-                parentNodeId: imgNodeId,
-                type: 'npfile',
-                imType:'x-im/image',
-                sourceUrl: obj.imgurl,
-                mode:'last'
-            }
+            // const imageFileNode = {
+            //     parentNodeId: imgNodeId,
+            //     type: 'npfile',
+            //     imType:'x-im/image',
+            //     sourceUrl: obj.imgurl,
+            //     mode:'last'
+            // }
         
-            //create file node for the image
-            const imageFile = tx.create(imageFileNode)
-            //const propertyMap = PropertyMap.getValidMap()
+            // //create file node for the image
+            // const imageFile = tx.create(imageFileNode)
+            // //const propertyMap = PropertyMap.getValidMap()
 
-             //insert image at current cursor pos
-             let insertNodes = api.doc.getNodes()
-             tx.insertBlockNode({
-                id:imgNodeId,
-                type:'ximimage',
-                imageFile:imageFile.id,
-                alignment:'',
-                caption:obj.imageTekst,
-                alttext:'',
-                credit:'',
-                mode:imageFile.mode
-            })
+            //  //insert image at current cursor pos
+            //  let insertNodes = api.doc.getNodes()
+            //  tx.insertBlockNode({
+            //     id:imgNodeId,
+            //     type:'ximimage',
+            //     imageFile:imageFile.id,
+            //     alignment:'',
+            //     caption:obj.imageTekst,
+            //     alttext:'',
+            //     credit:'',
+            //     mode:imageFile.mode
+            // })
 
-            setTimeout(() => {
-                api.editorSession.fileManager.sync()
-                .then(() => {
-                    const imageNode = api.editorSession.getDocument().get(imgNodeId)
-                    imageNode.emit('onImageUploaded')
-                } )
-                .catch(() => {
-                    const document = api.editorSession.getDocument()
-                    const node = document.get(imgNodeId)
-                    const imageFile = node.imageFile
+            // setTimeout(() => {
+            //     api.editorSession.fileManager.sync()
+            //     .then(() => {
+            //         const imageNode = api.editorSession.getDocument().get(imgNodeId)
+            //         imageNode.emit('onImageUploaded')
+            //     } )
+            //     .catch(() => {
+            //         const document = api.editorSession.getDocument()
+            //         const node = document.get(imgNodeId)
+            //         const imageFile = node.imageFile
     
-                    if(imageFile){
-                        // api.editorSession.transaction((tx) =>{
-                            tx.delete(imageFile)
-                        // } )
-                    }
-                    api.document.deleteNode('ximimage', node)
-                })
+            //         if(imageFile){
+            //             // api.editorSession.transaction((tx) =>{
+            //                 tx.delete(imageFile)
+            //             // } )
+            //         }
+            //         api.document.deleteNode('ximimage', node)
+            //     })
     
-            }, 0 )
+            // }, 0 )
         })
 
        
