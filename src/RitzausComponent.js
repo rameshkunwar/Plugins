@@ -50,7 +50,7 @@ class RitzausComponent extends Component {
     didMount() {
          console.log('Ritzaus plugin rendered')
         //  window.addEventListener('message', this.getMsgFromIframe, false)
-          window.addEventListener('message', this.handleJsonData, false)
+          window.addEventListener('message', this.handleJsonData.bind(this), false)
        
        
         //let msgFromIframe = ""
@@ -143,7 +143,7 @@ class RitzausComponent extends Component {
 
         return el
     }
-
+   
     //code to handle json
     handleJsonData(event){
         console.log(`Event origin is: ${event.origin}`)
@@ -187,6 +187,7 @@ class RitzausComponent extends Component {
             myapi.document.insertBlockNode({
                 tx:tx,
                 data:{
+                    id:headlineNodeId,
                     type:'headline',
                     content:obj.overskrift,
                     attribution:''
@@ -214,6 +215,7 @@ class RitzausComponent extends Component {
             myapi.document.insertBlockNode({
                 tx: tx,
                 data: {
+                    id:bodyNodeId,
                     type: 'paragraph',
                     content: obj.broedtekst,
                     attribution: ''
@@ -224,33 +226,60 @@ class RitzausComponent extends Component {
         })
 
         api.editorSession.transaction((tx) => {
-                   let surface = api.editorSession.getFocusedSurface()
-                   tx.setSelection({
-                       type: 'node',
-                       nodeId: Object.keys(api.doc.getNodes())[2],//this should be dynamic based on content
-                       mode: 'last',
-                       containerId: surface.getContainerId(),
-                       surfaceId: surface.id
-                   })
-               })
-
+            myapi.document.insertBlockNode({
+                tx: tx,
+                data: {
+                    id: 'temporary-1',
+                    type: 'paragraph',
+                    content: '',
+                    attribution: ''
+                },
+                mode: 'last'
+                //refNode:myNodes[2]
+            })
+        })
+        // let paragraphNodeId = idGenerator()
         // api.editorSession.transaction((tx) => {
-        //     const allNodes = api.doc.getNodes()
-        //     const nodeid = allNodes.body.nodes[5]
+        //            let surface = api.editorSession.getFocusedSurface()
+        //            tx.setSelection({
+        //                type: 'node',
+        //                nodeId: Object.keys(api.doc.getNodes())[3],//this should be dynamic based on content
+        //                mode: 'last',
+        //                containerId: surface.getContainerId(),
+        //                surfaceId: surface.id
+        //            })
+        //        })
+        //        api.editorSession.transaction((tx) => {
+        //                tx.insertBlockNode({
+        //                    id: paragraphNodeId,
+        //                    type: 'paragraph',
+        //                    content: '',
+        //                    containerId: 'body'                             
+        //                })
+        //            })
+       const doc = this.context.editorSession.getDocument()
+        api.editorSession.transaction((tx) => {
+          
+            //const allNodes = doc.getNodes()
+            //const nodeid = allNodes.body.nodes[5]
+            //let lastnodid = bodyNodeId
+            // for (let n = 0; n < allNodes.body.nodes.length; n++) {
+            //     lastnodeid = allNodes.body.nodes[n]
+            // }
 
-        //     const selection = api.doc.createSelection({
-        //         type: 'property',
-        //         path: [bodyNodeId, 'content'],
-        //         startOffset: 'last',
-        //         endOffset: 'last'
-        //         // startOffset: 5,
-        //         // endOffset: 12
-        //     })
+            const selection = doc.createSelection({
+                type: 'property',
+                path: ['temporary-1', 'content'],
+                startOffset: 0,
+                endOffset: 0
+                // startOffset: 5,
+                // endOffset: 12
+            })
             
-        //     this.context.editorSession.setSelection(selection)
+            this.context.editorSession.setSelection(selection)
 
 
-        // } )
+        } )
 
         api.editorSession.transaction((tx) => {
             const imgNodeId = idGenerator()
@@ -277,6 +306,8 @@ class RitzausComponent extends Component {
                 caption:obj.imageTekst,
                 alttext:'',
                 credit:'',
+                // mode:'after',
+                // refNode:paragraphNodeId
                // mode:imageFile.mode
             })
 
@@ -424,24 +455,24 @@ class RitzausComponent extends Component {
 
         //insert teaser
         
-        // let nodes = api.doc.getNodes()
-        // let teaserNode = {}
-        // let notherTeaserTest=""
-        // let teaserNodeId = ""
-        // for(const node in nodes){
-        //     let value = nodes[node]
-        //     if(value.dataType === "x-im/teaser"){
-        //         teaserNodeId = value.id
-        //         console.log("teaserNodeId: "+teaserNodeId)
-        //         Object.assign(value, teaserNode)
-        //         //value.subect = "This is a subject",
-        //         value.text = obj.overskrift,
-        //         value.title = obj.rubrik,
-        //         value.uuid = "bececec2-17a5-419f-aca8-744e0427ba04",
-        //         value.height = "14",
-        //         value.width = "50"
-        //     }
-        // }
+        let nodes = api.doc.getNodes()
+        let teaserNode = {}
+        let notherTeaserTest=""
+        let teaserNodeId = ""
+        for(const node in nodes){
+            let value = nodes[node]
+            if(value.dataType === "x-im/teaser"){
+                teaserNodeId = value.id
+                console.log("teaserNodeId: "+teaserNodeId)
+                Object.assign(value, teaserNode)
+                //value.subect = "This is a subject",
+                value.text = obj.overskrift,
+                value.title = obj.rubrik,
+                value.uuid = "bececec2-17a5-419f-aca8-744e0427ba04",
+                value.height = "14",
+                value.width = "50"
+            }
+        }
 
         //end of teaser
 
