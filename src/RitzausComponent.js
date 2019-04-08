@@ -177,12 +177,9 @@ class RitzausComponent extends Component {
         //     refNode:insertNodes.body.nodes[2]
         // }
 
+        //cant get scope after fat arrow, so declaring here
         const myapi = api
 
-      
-        
-
-        
         let headlineNodeId = idGenerator()
         let rubrikNodeId = idGenerator()
         let bodyNodeId = idGenerator()
@@ -230,6 +227,9 @@ class RitzausComponent extends Component {
             })
         })
 
+        //HACK: need to create an empty node so that it will be overwritten by inserted image
+        // otherwise, it will  overwrite the last node
+
         api.editorSession.transaction((tx) => {
             myapi.document.insertBlockNode({
                 tx: tx,
@@ -262,6 +262,9 @@ class RitzausComponent extends Component {
         //                    containerId: 'body'                             
         //                })
         //            })
+
+        //creating a placeholder for the image, i.e. it's the end of the document
+        // as the reference is pointint to our hack node so that it gets overwritten
        const doc = this.context.editorSession.getDocument()
         api.editorSession.transaction((tx) => {
           
@@ -277,8 +280,6 @@ class RitzausComponent extends Component {
                 path: ['temporary-1', 'content'],
                 startOffset: 0,
                 endOffset: 0
-                // startOffset: 5,
-                // endOffset: 12
             })
             
             this.context.editorSession.setSelection(selection)
@@ -324,7 +325,7 @@ class RitzausComponent extends Component {
                 } )
                 .catch(() => {
                     const document = api.editorSession.getDocument()
-                    const node = document.get(imgNodeId)
+                    const node = document.get(imgNodeId) //this might not work as it's missing api name
                     const imageFile = node.imageFile
     
                     if(imageFile){
@@ -338,6 +339,83 @@ class RitzausComponent extends Component {
             }, 0 )
 
         })
+
+        
+
+        //insert teaser
+        
+        let nodes = api.doc.getNodes()
+        let teaserNode = {}
+        let notherTeaserTest=""
+        let teaserNodeId = ""
+        for(const node in nodes){
+            let value = nodes[node]
+            if(value.dataType === "x-im/teaser"){
+                teaserNodeId = value.id
+                console.log("teaserNodeId: "+teaserNodeId)
+                Object.assign(value, teaserNode)
+                //value.subect = "This is a subject",
+                value.text = obj.overskrift,
+                value.title = obj.rubrik,
+                value.uuid = "bececec2-17a5-419f-aca8-744e0427ba04",
+                value.height = "14",
+                value.width = "50"
+            }
+        }
+
+        //end of teaser
+
+        //trying to delete empty nodes i.e. headline or preamble which gets created
+        //even after inserting the nodes
+        //OBS! creates new node of type 'body' or paragraph
+
+        /** TRY: delete all nodes but one in the beginning, it might overwrite the empty node */
+
+        const allNodes = api.doc.getNodes()
+        let newHeadLineNodeId =  allNodes.body.nodes[1]
+        let newPreAmbleNodeId = allNodes.body.nodes[2]
+        let newBodyNodeId = allNodes.body.nodes[3]
+       
+        let headlineNode = null
+        let preambleNode = null
+        let bodyNode = null
+
+
+        for(const node in allNodes){
+            let value = allNodes[node]
+            if(value.dataType === "x-im/teaser")
+               {
+                   console.log('will not delte s its teaser id')
+               }
+            else{
+                    if(value.content === ''){
+                        api.document.deleteNode('RitzausNyheder', value)
+                    }
+               
+                }
+
+                // need to check if it's also an image node, if so, should not be deleted
+
+                
+            // if(value.id === newHeadLineNodeId)
+            //     headlineNode = value
+            // else if(value.id === newPreAmbleNodeId)
+            //     preambleNode = value
+            // else if(value.id === newBodyNodeId)
+            //      bodyNode = value
+             
+        }    
+
+        
+    //     console.log(`newheadlinenodeId: ${newHeadLineNodeId}`)
+    //     console.log(`newheadlinenodeId: ${newPreAmbleNodeId}`)
+    //     //const nodeHeadline = myapi.document.get(newHeadLineNodeId)
+   
+        // api.document.deleteNode('RitzausNyheder', headlineNode)
+        // api.document.deleteNode('RitzausNyheder', preambleNode)
+        // api.document.deleteNode('RitzausNyheder', bodyNode)
+   
+
         
         //inserting using same transaction
 
@@ -457,73 +535,6 @@ class RitzausComponent extends Component {
         // }) //end of transaction using same transaction
 
        
-
-        //insert teaser
-        
-        let nodes = api.doc.getNodes()
-        let teaserNode = {}
-        let notherTeaserTest=""
-        let teaserNodeId = ""
-        for(const node in nodes){
-            let value = nodes[node]
-            if(value.dataType === "x-im/teaser"){
-                teaserNodeId = value.id
-                console.log("teaserNodeId: "+teaserNodeId)
-                Object.assign(value, teaserNode)
-                //value.subect = "This is a subject",
-                value.text = obj.overskrift,
-                value.title = obj.rubrik,
-                value.uuid = "bececec2-17a5-419f-aca8-744e0427ba04",
-                value.height = "14",
-                value.width = "50"
-            }
-        }
-
-        //end of teaser
-
-        const allNodes = api.doc.getNodes()
-        let newHeadLineNodeId =  allNodes.body.nodes[1]
-        let newPreAmbleNodeId = allNodes.body.nodes[2]
-        let newBodyNodeId = allNodes.body.nodes[3]
-       
-        let headlineNode = null
-        let preambleNode = null
-        let bodyNode = null
-
-
-        // for(const node in allNodes){
-        //     let value = allNodes[node]
-        //     if(value.dataType === "x-im/teaser")
-        //        {
-        //            console.log('will not delte s its teaser id')
-        //        }
-        //     else{
-        //             if(value.content === ''){
-        //                 api.document.deleteNode('RitzausNyheder', value)
-        //             }
-               
-        //         }
-
-                
-        //     // if(value.id === newHeadLineNodeId)
-        //     //     headlineNode = value
-        //     // else if(value.id === newPreAmbleNodeId)
-        //     //     preambleNode = value
-        //     // else if(value.id === newBodyNodeId)
-        //     //      bodyNode = value
-             
-        // }    
-
-        
-    //     console.log(`newheadlinenodeId: ${newHeadLineNodeId}`)
-    //     console.log(`newheadlinenodeId: ${newPreAmbleNodeId}`)
-    //     //const nodeHeadline = myapi.document.get(newHeadLineNodeId)
-   
-        // api.document.deleteNode('RitzausNyheder', headlineNode)
-        // api.document.deleteNode('RitzausNyheder', preambleNode)
-        // api.document.deleteNode('RitzausNyheder', bodyNode)
-   
-
             //let's insert image
     //    let paragraphNodeId = idGenerator()
 
