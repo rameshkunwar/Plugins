@@ -790,8 +790,8 @@ class RitzausComponent extends Component {
     }
 
     _getNyhedsUrl(){
-        const apiUserName = "imws@ritzau.dk"
-        const apiPassword = "infomtest1"
+        const apiUserName = "user_name_here"
+        const apiPassword = "password_here"
         const maxRecord = "30"  
         let newsId ="";      
         return `${apiUrlBase}?user=${apiUserName}&password=${apiPassword}&maksantal=${maxRecord}&newsId=${newsId}`
